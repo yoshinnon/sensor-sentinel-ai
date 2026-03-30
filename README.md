@@ -42,3 +42,51 @@ sensor-sentinel-ai/          # リポジトリルート
 ## 🚀 使い方
 1. `ansible/inventory.ini` を編集してターゲットサーバーを指定。
 2. `ansible-playbook -i ansible/inventory.ini ansible/playbook.yml` を実行。
+
+## 🛠️ 運用・管理コマンド (Operations)
+
+デプロイ完了後、サーバー上でコンテナの状態を確認・操作するための主要コマンドです。
+
+### 1. コンテナの稼働状態を確認
+```bash
+# 起動中のコンテナ一覧を表示
+docker ps
+
+# リソース使用状況（CPU/メモリ）をリアルタイム確認
+docker stats sensor-app-container
+```
+
+### 2. アプリケーションログの確認
+
+```bash
+# 最新のログを表示
+docker logs sensor-app-container
+
+# ログをリアルタイムで監視 (Ctrl+Cで終了)
+docker logs -f sensor-app-container
+```
+
+### 3. コンテナ内部でのデバッグ
+
+```bash
+# コンテナ内のシェルにログイン
+docker exec -it sensor-app-container /bin/bash
+```
+
+### 4. コンテナの停止・削除
+
+```bash
+# アプリの停止
+docker stop sensor-app-container
+
+# コンテナの削除
+docker rm sensor-app-container
+```
+
+## 💡 トラブルシューティング
+
+ブラウザから http://<Server-IP>:8501 にアクセスできない場合は、サーバーのファイアウォール設定を確認してください。
+
+```bash
+sudo ufw allow 8501/tcp
+```
