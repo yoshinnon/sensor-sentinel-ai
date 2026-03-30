@@ -1,0 +1,33 @@
+---
+- name: Ensure Docker is installed
+  apt:
+    name: docker.io
+    state: present
+
+- name: Sync application source to server
+  copy:
+    src: ../app/
+    dest: /opt/sensor-sentinel/app/
+
+- name: Generate Dockerfile from template
+  template:
+    src: Dockerfile.j2
+    dest: /opt/sensor-sentinel/Dockerfile
+
+- name: Build custom Docker image
+  community.docker.docker_image:
+    name: sensor-sentinel-ai
+    tag: v1.0
+    build:
+      path: /opt/sensor-sentinel
+      source: build
+    state: present
+
+- name: Run Sensor Sentinel container
+  community.docker.docker_container:
+    name: sensor-app-container
+    image: sensor-sentinel-ai:v1.0
+    state: started
+    restart_policy: always
+    published_ports:
+      - "8501:8501"
