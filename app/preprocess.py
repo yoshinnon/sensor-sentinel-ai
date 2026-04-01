@@ -1,6 +1,7 @@
 import pandas as pd
 
+
 def clean_sensor_data(df, column):
-    # 欠損値の線形補完
-    df[column] = df[column].interpolate(method='linear')
+    # pandas 3.0 対応: object-dtype を数値に変換してから線形補完
+    df[column] = pd.to_numeric(df[column], errors='coerce').interpolate(method='linear')
     return df

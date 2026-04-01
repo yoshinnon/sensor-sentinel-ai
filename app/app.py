@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 from sklearn.ensemble import IsolationForest
 
 st.set_page_config(page_title="Sensor Sentinel AI", layout="wide")
@@ -19,8 +18,15 @@ else:
     vals[100:105] += 2.5
     df = pd.DataFrame({"timestamp": time_idx, "value": vals})
 
-model = IsolationForest(contamination=contamination, random_state=42)
-df['is_anomaly'] = model.fit_predict(df[['value']])
+
+@st.cache_data
+def run_model(data_values, contamination):
+    """スライダー操作のたびに再学習しないようキャッシュする"""
+    model = IsolationForest(contamination=contamination, random_state=42)
+    return model.fit_predict(data_values)
+
+
+df['is_anomaly'] = run_model(df[['value']], contamination)
 df['is_anomaly'] = df['is_anomaly'].apply(lambda x: "異常" if x == -1 else "正常")
 
 st.line_chart(df.set_index('timestamp')['value'])
